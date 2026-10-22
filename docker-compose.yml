@@ -1,0 +1,22 @@
+services:
+  automind:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      PORT: ${PORT:-8000}
+      MODEL_PROVIDER: ${MODEL_PROVIDER:-gemma}
+      MODEL_NAME: ${MODEL_NAME:-gemma-4-31b-it}
+      GEMMA_API_KEY: ${GEMMA_API_KEY:-}
+      GEMMA_API_BASE_URL: ${GEMMA_API_BASE_URL:-https://generativelanguage.googleapis.com/v1beta}
+      MODEL_TIMEOUT: ${MODEL_TIMEOUT:-60}
+      DEMO_MODE: ${DEMO_MODE:-false}
+    ports:
+      - "${HOST_PORT:-8000}:${PORT:-8000}"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:${PORT:-8000}/api/vehicle', timeout=3)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
